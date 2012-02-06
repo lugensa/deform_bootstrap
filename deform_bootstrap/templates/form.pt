@@ -15,7 +15,7 @@
     <input type="hidden" name="_charset_" />
     <input type="hidden" name="__formid__" value="${field.formid}"/>
 
-    <div class="clearfix alert-message error" tal:condition="field.error">
+    <div class="clearfix alert alert-error" tal:condition="field.error">
       <p>
         <span class="errorMsgLbl" i18n:translate="">
           There was a problem with your submission

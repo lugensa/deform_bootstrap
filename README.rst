@@ -175,8 +175,8 @@ JS
   widgets that support it.
 
 ``jquery_chosen/chosen.jquery.js``
-  Only needed if you use ``ChosenSingleWidget`` or ``ChosenMultipleWidget``.
-
+  Only needed if you use ``ChosenSingleWidget``, ``ChosenOptGroupWidget``, or
+  ``ChosenMultipleWidget``,
 
 LESS / twitter_bootstrap
 ------------------------
@@ -255,3 +255,17 @@ with one choice per line.  To select the inline style, set the
                       (u'b', u'Bear'),
                       (u'c', u'Computer')],
               inline=True))
+
+Thanks
+======
+
+deform_bootstrap was created by Daniel Nouri.  Thanks to the following
+people for support, code, patches etc:
+
+ - Andreas Kaiser
+ - Chris McDonough
+ - Jason Kölker
+ - Jeff Dairiki
+ - Marco Mariani
+ - Tom Lazar
+ - https://github.com/dnouri/deform_bootstrap/contributors

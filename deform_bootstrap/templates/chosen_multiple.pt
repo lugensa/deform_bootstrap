@@ -15,7 +15,37 @@
     deform.addCallback(
         '${field.oid}',
         function(oid) {
-            $('#' + oid).chosen();
+          $('#' + oid).chosen();
+          <tal:block tal:condition="hasattr(field.widget, 'remote_values')">
+            $('#' + oid + '_chzn').bind('focusin', function() {
+              var self = this;
+              var selectField = $('#' + oid);
+
+              // make sure that the data is only loaded if the
+              // focus is on the field and the data has not been loaded
+              // before
+              if($(self).data('isLoaded') === true) { return; }
+              $(self).data('isLoaded', true);
+
+              var knownValues = {};
+              $('option', selectField).each(function(index) {
+                knownValues[$(this).attr('value')] = 1;
+              });
+
+              $.getJSON('${field.widget.remote_values}', function(data) {
+                $.each(data, function(index) {
+                  var row = this;
+                  var value = row[0];
+                  var label = row[1];
+                  if(knownValues[value] === undefined) {
+                    selectField.append(
+                      $('<option></option>').val(value).html(label));
+                  }
+                });
+                selectField.trigger("liszt:updated");
+              });
+            });
+          </tal:block>
         }
     );
   </script>

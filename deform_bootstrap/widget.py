@@ -1,9 +1,17 @@
-import json
 from colander import null, Invalid
 from deform.i18n import _
 from deform.widget import AutocompleteInputWidget, SelectWidget, Widget
 from deform.widget import DateTimeInputWidget as DateTimeInputWidgetBase
-from deform.widget import default_resource_registry
+import json
+import sys
+
+PY3 = sys.version_info[0] == 3
+
+
+if PY3:
+    string_types = str
+else:
+    string_types = basestring  # noqa
 
 
 class TypeaheadInputWidget(AutocompleteInputWidget):
@@ -44,76 +52,77 @@ class TypeaheadInputWidget(AutocompleteInputWidget):
         ``8``.
 
     """
-    readonly_template = 'readonly/textinput'
+
+    readonly_template = "readonly/textinput"
     size = None
     strip = True
-    template = 'typeahead_input'
+    template = "typeahead_input"
     source = []
     items = 8
 
     def serialize(self, field, cstruct, readonly=False):
         if cstruct in (null, None):
-            cstruct = ''
-        options = dict(
-            size=self.size,
-            source=self.source)
+            cstruct = ""
+        options = dict(size=self.size, source=self.source)
         template = readonly and self.readonly_template or self.template
-        return field.renderer(template,
-            cstruct=cstruct,
-            field=field,
-            options=json.dumps(options))
+        return field.renderer(
+            template, cstruct=cstruct, field=field, options=json.dumps(options)
+        )
 
 
 class DateTimeInputWidget(DateTimeInputWidgetBase):
 
-    template = 'splitted_datetimeinput'
-    readonly_template = 'readonly/textinput'
+    template = "splitted_datetimeinput"
+    readonly_template = "readonly/textinput"
     requirements = ()
 
     def serialize(self, field, cstruct, readonly=False):
         if cstruct is null or not cstruct:
-            _date = ''
-            _time = ''
+            _date = ""
+            _time = ""
         else:
             if len(cstruct) == 25:  # strip timezone if it's there
                 cstruct = cstruct[:-6]
             try:
-                _date, _time = cstruct.split('T')
+                _date, _time = cstruct.split("T")
             except ValueError:
-                _date, _time = cstruct.split(' ')
+                _date, _time = cstruct.split(" ")
         template = readonly and self.readonly_template or self.template
-        return field.renderer(template, field=field, cstruct=cstruct,
-                              date=_date, time=_time)
+        return field.renderer(
+            template, field=field, cstruct=cstruct, date=_date, time=_time
+        )
 
     def deserialize(self, field, pstruct):
         if pstruct is null:
             return null
         else:
-            _date = pstruct['date'].strip()
-            _time = pstruct['time'].strip()
+            _date = pstruct["date"].strip()
+            _time = pstruct["time"].strip()
 
-            if (not _date and not _time):
+            if not _date and not _time:
                 return null
 
             if not _date:
-                raise Invalid(field.schema, _('Incomplete date'), "")
+                raise Invalid(field.schema, _("Incomplete date"), "")
 
             if not _time:
                 _time = "00:00:00"
 
-            result = ' '.join([_date, _time])
+            result = " ".join([_date, _time])
 
             return result
 
 
 class ChosenSingleWidget(SelectWidget):
-    template = 'chosen_single'
+    template = "chosen_single"
+
 
 class ChosenOptGroupWidget(SelectWidget):
-    template = 'chosen_optgroup'
+    template = "chosen_optgroup"
+
 
 class ChosenMultipleWidget(Widget):
-    template = 'chosen_multiple'
+    template = "chosen_multiple"
     values = ()
     size = 1
 
@@ -126,7 +135,6 @@ class ChosenMultipleWidget(Widget):
     def deserialize(self, field, pstruct):
         if pstruct is null:
             return null
-        if isinstance(pstruct, basestring):
+        if isinstance(pstruct, string_types):
             return (pstruct,)
         return tuple(pstruct)
-
